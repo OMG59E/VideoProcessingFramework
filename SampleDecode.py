@@ -17,16 +17,12 @@
 import PyNvCodec as nvc
 
 gpuID = 0
-encFile = "big_buck_bunny_1080p_h264.mov"
-decFile = open("big_buck_bunny_1080p_h264.nv12", "wb")
-
+# encFile = "big_buck_bunny_1080p_h264.mov"
+encFile = "/nfs-data/xingwg/workspace/avs/data/video/ch00.264"  # "rtsp://192.168.1.201:8554/ch00.264"
 nvDec = nvc.PyNvDecoder(encFile, gpuID)
 
 while True:
     rawFrame = nvDec.DecodeSingleFrame()
     # Decoder will return zero-size frame if input file is over;
-    if not (rawFrame.size):
+    if not rawFrame.size:
         break
-    
-    frameByteArray = bytearray(rawFrame)
-    decFile.write(frameByteArray)

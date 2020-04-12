@@ -21,7 +21,7 @@ numFrames = 512
 
 print("This sample takes rtsp stream URL as input and transcodes it to local H.264 file")
 
-if(len(sys.argv) < 2):
+if len(sys.argv) < 2:
     print("Provide rtsp stream URL as CLI argument")
     exit(1)
 
@@ -37,22 +37,22 @@ try:
     while frame_num < numFrames:
         rawSurface = nvDec.DecodeSingleSurface()
         # Decoder will return zero-size frame if input file is over
-        if (rawSurface.Empty()):
+        if rawSurface.Empty():
             break
 
         # Encoder has some latency to it so it may return empty
         # encoded frame which is OK
         encFrame = nvEnc.EncodeSingleSurface(rawSurface)
-        if(encFrame.size):
+        if encFrame.size:
             encByteArray = bytearray(encFrame)
             outFile.write(encByteArray)
 
         frame_num += 1
 
-    #Encoder is asynchronous, so we need to flush it
+    # Encoder is asynchronous, so we need to flush it
     encFrames = nvEnc.Flush()
     for encFrame in encFrames:
-        if(encFrame.size):
+        if encFrame.size:
             encByteArray = bytearray(encFrame)
             outFile.write(encByteArray)
 

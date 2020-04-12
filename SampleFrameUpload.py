@@ -24,26 +24,26 @@ encFile = open("big_buck_bunny_1080p_h264.h264", "wb")
 nvEnc = nvc.PyNvEncoder({'preset': 'hq', 'codec': 'h264', 's': '1920x1080'}, gpuID)
 nvUpl = nvc.PyFrameUploader(nvEnc.Width(), nvEnc.Height(), nvEnc.PixelFormat(), gpuID)
 
-#Size of raw Full HD NV12 frame is 1920 * (1080 + 540)
+# Size of raw Full HD NV12 frame is 1920 * (1080 + 540)
 nv12FrameSize = 1920 * (1080 + 540)
 
 while True:
     rawFrame = np.fromfile(decFile, dtype = np.uint8, count = nv12FrameSize)
-    if not (rawFrame.size):
+    if not rawFrame.size:
         break
     
     rawSurface = nvUpl.UploadSingleFrame(rawFrame)
-    if (rawSurface.Empty()):
+    if rawSurface.Empty():
         break
 
     encFrame = nvEnc.EncodeSingleSurface(rawSurface)
-    if(encFrame.size):
+    if encFrame.size:
         encByteArray = bytearray(encFrame)
         encFile.write(encByteArray)
 
-#Encoder is asyncronous, so we need to flush it
+# Encoder is asyncronous, so we need to flush it
 encFrames = nvEnc.Flush()
 for encFrame in encFrames:
-    if(encFrame.size):
+    if encFrame.size:
         encByteArray = bytearray(encFrame)
         encFile.write(encByteArray)
