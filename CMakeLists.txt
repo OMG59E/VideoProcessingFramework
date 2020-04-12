@@ -70,3 +70,25 @@ if(GENERATE_PYTORCH_EXTENSION)
 						DEPENDS Pytorch_Nv_Codec)
 	add_dependencies(PyNvCodec PytorchNvCodec)
 endif(GENERATE_PYTORCH_EXTENSION)
+
+set(SRC_FILE_EXTENSIONS c cpp)
+
+# find all files of interest
+foreach(ext ${SRC_FILE_EXTENSIONS})
+	file(GLOB FOUND_FILES ${CMAKE_SOURCE_DIR}/${dir}/*.${ext})
+	set(LINT_SOURCES ${LINT_SOURCES} ${FOUND_FILES})
+endforeach()
+
+set(SAMPLE_SOURCES ${LINT_SOURCES})
+
+foreach(SAMPLE_NAME ${SAMPLE_SOURCES})
+	#unpack the dir "/"
+	string(REPLACE "/" ";" SEXY_LIST ${SAMPLE_NAME})
+	list(GET SEXY_LIST -1 TEST_CASE_NAME)
+	#get the file name without suffix
+	string(REPLACE "." ";" SEXY_LIST ${TEST_CASE_NAME})
+	list(GET SEXY_LIST 0 TEST_CASE_NAME)
+	add_executable(${TEST_CASE_NAME}  ${SAMPLE_NAME})
+	target_link_libraries(${TEST_CASE_NAME} TC opencv_core opencv_highgui)
+	set_target_properties(${TEST_CASE_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY .)
+endforeach()
